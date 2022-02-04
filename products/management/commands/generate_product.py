@@ -1,10 +1,10 @@
-from http.client import ImproperConnectionState
-from unicodedata import category
+from random import choice
+
 from django.core.management.base import BaseCommand
+from django.db import transaction
+
 from products.models import *
 from products.service import random_string
-from django.db import transaction
-from random import choice
 
 
 class Command(BaseCommand):

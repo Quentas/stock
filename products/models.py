@@ -6,6 +6,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'Categories'
+
 class Product(models.Model):
     name = models.CharField(unique=True, blank=False, max_length=20)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
@@ -14,7 +17,7 @@ class Product(models.Model):
         ('in_stock', 'In stock'),
         ('out_of_stock', 'Out of stock')
     ], max_length=12)
-    remains = models.IntegerField()
+    remains = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.name}  -  {self.category}'
+        return f'{self.name}'
