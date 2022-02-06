@@ -1,4 +1,3 @@
-from unicodedata import category
 from django.db import models
 
 class Category(models.Model):
@@ -26,3 +25,14 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    def __eq__(self, other):
+        vals = [
+            self.id == other.id,
+            self.name == other.name,
+            self.category == other.category,
+            self.price == other.price,
+            self.status == other.status,
+            self.remains == other.remains,
+        ]
+        return all(vals)
