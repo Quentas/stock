@@ -1,3 +1,4 @@
+from unicodedata import category
 from django.db import models
 
 class Category(models.Model):
@@ -8,6 +9,10 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+
+    @property
+    def amount_of_products(self):
+        return Product.objects.filter(category=self).count()
 
 class Product(models.Model):
     name = models.CharField(unique=True, blank=False, max_length=20)

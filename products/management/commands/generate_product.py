@@ -20,8 +20,7 @@ class Command(BaseCommand):
             help=u'Количество создаваемых продуктов в категории')
 
     def handle(self, *args, **kwargs):
-        categories = Category.objects.all()
-        category_names = categories.values_list('name', flat=True)
+        category_names = Category.objects.values_list('name', flat=True)
         product_names = Product.objects.values_list('name', flat=True)
         new_category_names = [random_string(category_names) for _ in range(kwargs['categories'])]
         new_product_names = [random_string(product_names) for _ in range(kwargs['products'])]
@@ -31,6 +30,7 @@ class Command(BaseCommand):
             Category.objects.bulk_create(
                 [Category(name=name) for name in new_category_names]
             )
+            categories = Category.objects.all()
             Product.objects.bulk_create(
                 [Product(
                     name=name, 
