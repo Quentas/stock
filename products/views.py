@@ -9,6 +9,7 @@ from .models import *
 
 class CategoryListView(ListView):
     model = Category
+    queryset = Category.objects.order_by('id')
     template_name = 'index.html'
     paginate_by = 50
 
@@ -23,13 +24,14 @@ class ProductListView(ListView):
         products = cache.get(f'products_{category}')
         if not products:
             products = Product.objects.filter(category=category)
-            cache.set(f'products_{category}', products, 60*15)
+            cache.set(f'products_{category}', list(products), 60*15)
             sleep(2)
         else:
-            for item in products.iterator():
-                if item == Product.objects.get(id=item.id):
-                    cache.clear()
+            for item in products:
+                if not (item == Product.objects.get(id=item.id)):
+                    cache.delete(f'products_{category}')
                     products = Product.objects.filter(category=category)
                     cache.set(f'products_{category}', products, 60*15)
+                    print("cache cleared")
                     break
         return products
