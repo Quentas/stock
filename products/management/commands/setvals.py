@@ -9,6 +9,8 @@ from django.db import transaction, connection
 
 from products.models import Product
 from products.service import round_up
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 
 class Command(BaseCommand):
@@ -29,5 +31,19 @@ class Command(BaseCommand):
             item.remains = data['remains']
             ls.append(item)
 
-            print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
+            if cache.get(f'products_{item.category}'):
+                cached_dict = cache.get(f'products_{item.category}')
+                if cached_dict[f'{item}']:
+                    cached_dict[f'{item}']['price'] = data['price']
+                    cached_dict[f'{item}']['status'] = data['status']
+                    cached_dict[f'{item}']['remains'] = data['remains']
+                else:
+                    cached_dict[f'{item}'] = {
+                        'price': data['price'], 
+                        'status': data['status'], 
+                        'remains': data['remains']
+                        }
+                cache.set(f'products_{item.category}', cached_dict, 60*15)
+            #print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
         Product.objects.bulk_update(ls, ['price', 'status', 'remains'])
+        print(len(connection.queries))
