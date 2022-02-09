@@ -1,4 +1,4 @@
-from itertools import product
+from itertools import islice
 from math import prod
 from time import sleep
 
@@ -28,7 +28,6 @@ class ProductListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         category = get_object_or_404(Category, name=self.kwargs['category'])
         products = cache.get(f'products_{category}')
         if not products:
@@ -44,16 +43,17 @@ class ProductListView(ListView):
             sleep(2)
             print('CACHING')
         else:
-            products = cache.get(f'products_{category}')
             print('CACHED')
-        
-        context['dict_to_cache'] = products
+        page = 1
+        if self.request.GET.get('page'):
+            page = int(self.request.GET.get('page'))
+        start = (page - 1) * self.paginate_by
+        stop = page * self.paginate_by
+        context['dict_to_cache'] = dict(list(products.items())[start:stop])
         return context
 
-        
     def get_queryset(self):
-        #category = get_object_or_404(Category, name=self.kwargs['category'])
-        #vals = Product.objects.filter(category=category).values()
-        return []
+        count = Product.objects.filter(category__name=self.kwargs['category']).count()
+        return [None] * count
 
 
