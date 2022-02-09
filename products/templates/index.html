@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-
+{% load cache %}
 {% block title %}Categories{% endblock %}
 
 {% block content %}
-
+{% cache 500 index_table %}
   <table class="table table-striped table-hover">
     <tr>
       <th>Category</th>
@@ -16,4 +16,6 @@
     </tr>
     {% endfor %}
   </table>
+
+{% endcache %}
 {% endblock %}

@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from random import (
     choice, 
     uniform, 
@@ -29,5 +30,12 @@ class Command(BaseCommand):
             item.remains = data['remains']
             ls.append(item)
 
-            print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
+            cached_queryset = cache.get(f'products_{item.category}')
+            if cached_queryset:
+                print(item)
+                print(cached_queryset)
+                if item in cached_queryset:
+                    print(item, True)
+
+            #print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
         Product.objects.bulk_update(ls, ['price', 'status', 'remains'])

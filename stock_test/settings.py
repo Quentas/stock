@@ -75,7 +75,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
+'''
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -85,15 +85,15 @@ CACHES = {
         }
     }
 }
-
 '''
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.path.join(BASE_DIR, 'cachedir'),
     }
 }
-'''
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
