@@ -23,7 +23,7 @@ class CategoryListView(ListView):
 class ProductListView(ListView):
     model = Product
     template_name = 'products.html'
-    paginate_by = 5
+    paginate_by = 50
 
     
     def get_context_data(self, **kwargs):
@@ -31,6 +31,8 @@ class ProductListView(ListView):
         category = get_object_or_404(Category, name=self.kwargs['category'])
         products = cache.get(f'products_{category}')
         if not products:
+            # Writes every product of this category into dictionary
+            # and sets it into cache
             dict_to_cache = {}
             for product in Product.objects.filter(category=category).iterator():
                 dict_to_cache[f'{product}'] = {
@@ -40,10 +42,11 @@ class ProductListView(ListView):
                 }
             cache.set(f'products_{category}', dict_to_cache, 60*15)
             products = dict_to_cache
-            sleep(2)
+            sleep(2)  ## Performs time consuming task
             print('CACHING')
         else:
             print('CACHED')
+        # Cuts a dictionary of objects according to pagination
         page = 1
         if self.request.GET.get('page'):
             page = int(self.request.GET.get('page'))
@@ -53,6 +56,7 @@ class ProductListView(ListView):
         return context
 
     def get_queryset(self):
+        # This is done only for page pagination to work properly
         count = Product.objects.filter(category__name=self.kwargs['category']).count()
         return [None] * count
 

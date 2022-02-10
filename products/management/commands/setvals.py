@@ -34,16 +34,18 @@ class Command(BaseCommand):
             if cache.get(f'products_{item.category}'):
                 cached_dict = cache.get(f'products_{item.category}')
                 if cached_dict[f'{item}']:
+                    # Updates it's values
                     cached_dict[f'{item}']['price'] = data['price']
                     cached_dict[f'{item}']['status'] = data['status']
                     cached_dict[f'{item}']['remains'] = data['remains']
                 else:
+                    # Creates new object to dictionary
                     cached_dict[f'{item}'] = {
                         'price': data['price'], 
                         'status': data['status'], 
                         'remains': data['remains']
                         }
                 cache.set(f'products_{item.category}', cached_dict, 60*15)
-            #print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
+            print(f"Item '{item}': Price {data['price']} // Status: {data['status']} // Remains: {data['remains']}")
         Product.objects.bulk_update(ls, ['price', 'status', 'remains'])
         print(len(connection.queries))
