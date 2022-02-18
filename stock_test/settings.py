@@ -76,24 +76,24 @@ DATABASES = {
     }
 }
 
-CACHES = {
-    "default": {
+CACHES = {}
+
+is_local_caching = False
+if is_local_caching:
+    CACHES['default'] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cachedir'),
+    }
+else:
+    CACHES['default'] = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
-}
 
-'''
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cachedir'),
-    }
-}
-'''
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 

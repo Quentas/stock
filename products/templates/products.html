@@ -3,6 +3,7 @@
 {% block title %}Products{% endblock %}
 
 {% block content %}
+
     <a href="{% url 'home' %}" class="btn btn-warning">To categories</a>
     <table class="table table-striped table-hover">
         <tr>
@@ -11,13 +12,20 @@
           <th>Status</th>
           <th>Remains</th>
         </tr>
-        {% for object in object_list %}
+        {% for key, values in dict_to_cache.items %}
         <tr>
-          <td><p>{{ object }}</p></td>
-          <td><p>{{ object.price }}</p></td>
-          <td><p>{{ object.get_status_display }}</p></td>
-          <td><p>{{ object.remains }}</p></td>
+            <td>{{key}}</td>
+            {% for k, v in values.items %}
+              {% if k == 'status' and v == 'in_stock' %}
+                <td>In stock</td>
+              {% elif k == 'status' and v == 'out_of_stock' %}
+                <td>Out of stock</td>
+              {% else %}
+                <td>{{ v }}</td>
+              {% endif %}
+            {% endfor %}
         </tr>
         {% endfor %}
+
       </table>
 {% endblock %}
