@@ -1,16 +1,11 @@
-from itertools import islice
-from math import prod
 from time import sleep
 
-from django.db import connection
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
 
 from .models import *
+from .tasks import send
 
 
 class CategoryListView(ListView):
@@ -25,7 +20,6 @@ class ProductListView(ListView):
     template_name = 'products.html'
     paginate_by = 50
 
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = get_object_or_404(Category, name=self.kwargs['category'])
@@ -53,6 +47,7 @@ class ProductListView(ListView):
         start = (page - 1) * self.paginate_by
         stop = page * self.paginate_by
         context['dict_to_cache'] = dict(list(products.items())[start:stop])
+        send.delay(self.kwargs['category'])
         return context
 
     def get_queryset(self):
